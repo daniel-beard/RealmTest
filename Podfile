@@ -10,4 +10,4 @@ platform :ios, '7.0'
 # ignore all warnings from all pods
 inhibit_all_warnings!
 
-pod 'Realm', '0.93.1'
+pod 'Realm', '~> 0.96'

@@ -15,7 +15,7 @@ static NSString *const kRealmId = @"cache.channel";
 
 + (DBRealmModel1 *)loadCachedModelForKeyPrefix:(NSString *)keyPrefix {
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithPath:[self realmPath] readOnly:NO error:&error];
+    RLMRealm *realm = [RLMRealm realmWithConfiguration:[self realmConfiguration] error:&error];
     
     if (!realm) {
         NSLog(@"Error %@", error.localizedDescription);
@@ -26,7 +26,7 @@ static NSString *const kRealmId = @"cache.channel";
 - (void)persist {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithPath:[self.class realmPath] readOnly:NO error:&error];
+        RLMRealm *realm = [RLMRealm realmWithConfiguration:[self.class realmConfiguration] error:&error];
         if (!realm) {
             NSLog(@"Error %@", error.localizedDescription);
         }
@@ -42,10 +42,23 @@ static NSString *const kRealmId = @"cache.channel";
     return @"keyPrefix";
 }
 
-+ (NSString *)realmPath {
++ (RLMRealmConfiguration *)realmConfiguration {
     NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] copy];
+    NSString *realmPath = [cachePath stringByAppendingPathComponent:kRealmId];
+    RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
+    config.path = realmPath;
+    config.readOnly = NO;
     
-    return [cachePath stringByAppendingPathComponent:kRealmId];
+    config.schemaVersion = 1;
+    config.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
+        // We haven’t migrated anything yet, so oldSchemaVersion == 0
+        if (oldSchemaVersion < 1) {
+            // Nothing to do!
+            // Realm will automatically detect new properties and removed properties
+            // And will update the schema on disk automatically
+        }
+    };
+    return config;
 }
 
 @end

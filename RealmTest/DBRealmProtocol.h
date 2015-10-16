@@ -13,7 +13,7 @@
 
 @protocol DBRealmProtocol <NSObject>
 
-+ (NSString *)realmPath;
++ (RLMRealmConfiguration *)realmConfiguration;
 
 @end
 

@@ -15,7 +15,7 @@ static NSString *const kRealmId = @"search.history";
 
 - (void)persist {
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithPath:[DBRealmModel2 realmPath] readOnly:NO error:&error];
+    RLMRealm *realm = [RLMRealm realmWithConfiguration:[self.class realmConfiguration] error:&error];
     
     if (!realm) {
         NSLog(@"Error %@", error.localizedDescription);
@@ -41,9 +41,7 @@ static NSString *const kRealmId = @"search.history";
 
 + (NSArray *)loadModelForModelId:(NSString *)modelId {
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithPath:[DBRealmModel2 realmPath]
-                                     readOnly:NO
-                                        error:&error];
+    RLMRealm *realm = [RLMRealm realmWithConfiguration:[self realmConfiguration] error:&error];
     
     if (!realm) {
         NSLog(@"Error %@", error.localizedDescription);
@@ -66,10 +64,23 @@ static NSString *const kRealmId = @"search.history";
     return @"compositePrimaryKey";
 }
 
-+ (NSString *)realmPath {
++ (RLMRealmConfiguration *)realmConfiguration {
     NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] copy];
+    NSString *realmPath = [cachePath stringByAppendingPathComponent:kRealmId];
+    RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
+    config.path = realmPath;
+    config.readOnly = NO;
     
-    return [cachePath stringByAppendingPathComponent:kRealmId];
+    config.schemaVersion = 1;
+    config.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
+        // We haven’t migrated anything yet, so oldSchemaVersion == 0
+        if (oldSchemaVersion < 1) {
+            // Nothing to do!
+            // Realm will automatically detect new properties and removed properties
+            // And will update the schema on disk automatically
+        }
+    };
+    return config;
 }
 
 @end
