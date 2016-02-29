@@ -30,6 +30,8 @@
                 // Realm will automatically detect new properties and removed properties
                 // And will update the schema on disk automatically
             }
+
+
         };
         [RLMRealmConfiguration setDefaultConfiguration:defaultConfig];
         NSError *error = [RLMRealm migrateRealm:defaultConfig];
@@ -37,9 +39,11 @@
         
         RLMRealmConfiguration *config = [DBRealmModel1 realmConfiguration];
         NSLog(@"Schema version = %@", @(config.schemaVersion));
-        error = [RLMRealm migrateRealm:config];
+//        [RLMRealm realmWithConfiguration:config error:&error];
+        [RLMRealm realmWithConfiguration:config error:NULL];
         NSLog(@"Error %@", error.localizedDescription);
-        error = [RLMRealm migrateRealm:[DBRealmModel2 realmConfiguration]];
+//        [RLMRealm realmWithConfiguration:[DBRealmModel2 realmConfiguration] error: &error];
+        [RLMRealm realmWithConfiguration:[DBRealmModel2 realmConfiguration] error: NULL];
         NSLog(@"Error %@", error.localizedDescription);
         
     });
