@@ -49,7 +49,7 @@ static NSString *const kRealmId = @"cache.channel";
     config.path = realmPath;
     config.readOnly = NO;
     
-    config.schemaVersion = 1;
+    config.schemaVersion = 2;
     config.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
 
 
@@ -61,6 +61,11 @@ static NSString *const kRealmId = @"cache.channel";
                                   // Realm will automatically detect new properties and removed properties
                                   // And will update the schema on disk automatically
                               }
+
+                                // Add the 'test' property to Realms with a schema version of 0 or 1
+                                if (oldSchemaVersion < 2) {
+                                    newObject[@"test"] = @"";
+                                }
                           }];
     };
     return config;

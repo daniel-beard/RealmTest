@@ -17,6 +17,7 @@
 @property NSString *normalizedURLString;
 @property NSDate *timestamp;
 @property NSString *responseData;
+@property NSString *test;
 
 - (void)persist;
 
