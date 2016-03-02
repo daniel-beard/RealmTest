@@ -40,8 +40,9 @@
         RLMRealmConfiguration *config = [DBRealmModel1 realmConfiguration];
         NSLog(@"Schema version = %@", @(config.schemaVersion));
 //        [RLMRealm realmWithConfiguration:config error:&error];
-        [RLMRealm realmWithConfiguration:config error:NULL];
-        NSLog(@"Error %@", error.localizedDescription);
+        NSError *error1 = nil;
+        [RLMRealm realmWithConfiguration:config error:&error1];
+        NSLog(@"Error %@", error1.localizedDescription);
 //        [RLMRealm realmWithConfiguration:[DBRealmModel2 realmConfiguration] error: &error];
         [RLMRealm realmWithConfiguration:[DBRealmModel2 realmConfiguration] error: NULL];
         NSLog(@"Error %@", error.localizedDescription);
